@@ -13,7 +13,13 @@ function FormView({
   secondaryAction,
   secondaryActionLabel,
 }: FormViewProps) {
-  return <div>FormView</div>;
+  return (
+    <div className="bg-white rounded-xl md:px-20">
+      {/* Body */}
+      <div className="relative p-6 ">{body}</div>
+      {/* Footer */}
+    </div>
+  );
 }
 
 export default FormView;

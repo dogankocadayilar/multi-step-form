@@ -72,8 +72,8 @@ function Form() {
   );
 
   return (
-    <div>
-      <Sidebar step={step} />
+    <div className="md:flex m-5 md:bg-white rounded-2xl md:p-5 shadow-sm">
+      <Sidebar currentStep={step} />
       <FormView
         actionLabel={actionLabel}
         body={bodyContent}
