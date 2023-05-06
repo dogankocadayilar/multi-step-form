@@ -5,7 +5,7 @@ interface HeadingProps {
 
 function Heading({ title, subTitle }: HeadingProps) {
   return (
-    <div className="mb-3 mt-5">
+    <div className="md:mt-5">
       <div className="text-2xl md:text-4xl font-bold text-blue-950">
         {title}
       </div>

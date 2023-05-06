@@ -1,9 +1,14 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, createContext } from "react";
 import { useForm, FieldValues, SubmitHandler } from "react-hook-form";
 import Heading from "../Heading";
 import FormView from "./FormView";
 import Sidebar from "./Sidebar";
 import Input from "../inputs/Input";
+import Toggle from "../Toggle";
+import { PLANS } from "../../data/Constants";
+import Plan from "../inputs/Plan";
+
+export const BillingContext = createContext(true);
 
 enum STEPS {
   INFO = 0,
@@ -25,10 +30,14 @@ function Form() {
       name: "",
       email: "",
       phone: "",
+      planTitle: "arcade",
       addons: [],
       isMonthly: true,
     },
   });
+
+  const isMonthly = watch("isMonthly");
+  const planTitle = watch("planTitle");
 
   const setCustomValue = (id: string, value: any) => {
     setValue(id, value, {
@@ -106,25 +115,43 @@ function Form() {
 
   if (step === STEPS.PLAN) {
     bodyContent = (
-      <div className="">
+      <div className="flex flex-col gap-4 md:gap-10">
         <Heading
           title="Select your plan"
           subTitle="You have the option monthly or yearly billing."
+        />
+        <div className="flex flex-col md:flex-row gap-3 md:gap-5 md:justify-between">
+          {PLANS.map((plan) => (
+            <Plan
+              key={plan.title}
+              billing={plan.billing}
+              icon={plan.icon}
+              title={plan.title}
+              isSelected={plan.title === planTitle}
+              onClick={(value) => setCustomValue("planTitle", value)}
+            />
+          ))}
+        </div>
+        <Toggle
+          isMonthly={isMonthly}
+          onClick={(value) => setCustomValue("isMonthly", value)}
         />
       </div>
     );
   }
 
   return (
-    <div className="md:flex  md:bg-white md:rounded-2xl md:p-5 md:shadow-lg">
+    <div className="md:flex md:bg-white md:rounded-2xl md:p-5 md:shadow-lg">
       <Sidebar currentStep={step} />
-      <FormView
-        actionLabel={actionLabel}
-        body={bodyContent}
-        onSubmit={handleSubmit(onSubmit)}
-        secondaryAction={step === STEPS.INFO ? undefined : onBack}
-        secondaryActionLabel={secondaryActionLabel}
-      />
+      <BillingContext.Provider value={isMonthly}>
+        <FormView
+          actionLabel={actionLabel}
+          body={bodyContent}
+          onSubmit={handleSubmit(onSubmit)}
+          secondaryAction={step === STEPS.INFO ? undefined : onBack}
+          secondaryActionLabel={secondaryActionLabel}
+        />
+      </BillingContext.Provider>
     </div>
   );
 }
