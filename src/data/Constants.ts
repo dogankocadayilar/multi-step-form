@@ -19,3 +19,21 @@ export const PLANS = [
     billing: 15,
   },
 ];
+
+export const ADDONS = [
+  {
+    title: "online service",
+    desc: "Access to multiplayer games",
+    billing: 1,
+  },
+  {
+    title: "larger storage",
+    desc: "Extra 1TB of cloud storage",
+    billing: 2,
+  },
+  {
+    title: "customizable profile",
+    desc: "Custom theme on your profile",
+    billing: 2,
+  },
+];

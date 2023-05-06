@@ -1,12 +1,13 @@
-import { useState, useMemo, createContext } from "react";
+import { useState, useMemo, createContext, useCallback } from "react";
 import { useForm, FieldValues, SubmitHandler } from "react-hook-form";
 import Heading from "../Heading";
 import FormView from "./FormView";
 import Sidebar from "./Sidebar";
 import Input from "../inputs/Input";
 import Toggle from "../Toggle";
-import { PLANS } from "../../data/Constants";
+import { ADDONS, PLANS } from "../../data/Constants";
 import Plan from "../inputs/Plan";
+import Addon from "../inputs/Addon";
 
 export const BillingContext = createContext(true);
 
@@ -31,13 +32,14 @@ function Form() {
       email: "",
       phone: "",
       planTitle: "arcade",
-      addons: [],
+      addons: ["online service"],
       isMonthly: true,
     },
   });
 
   const isMonthly = watch("isMonthly");
   const planTitle = watch("planTitle");
+  const addons = watch("addons");
 
   const setCustomValue = (id: string, value: any) => {
     setValue(id, value, {
@@ -136,6 +138,42 @@ function Form() {
           isMonthly={isMonthly}
           onClick={(value) => setCustomValue("isMonthly", value)}
         />
+      </div>
+    );
+  }
+
+  const toggleAddon = useCallback(
+    (title: string) => {
+      const isAddon = addons.includes(title);
+      if (isAddon) {
+        const newAddons = addons.filter((addon: string) => addon !== title);
+        setCustomValue("addons", newAddons);
+      } else {
+        setCustomValue("addons", [...addons, title]);
+      }
+    },
+    [addons]
+  );
+
+  if (step === STEPS.ADDONS) {
+    bodyContent = (
+      <div className="flex flex-col gap-4">
+        <Heading
+          title="Pick add-ons"
+          subTitle="Add-ons help enchance your gaming experience."
+        />
+        <div className="flex flex-col gap-3 md:gap-5">
+          {ADDONS.map((addon) => (
+            <Addon
+              key={addon.title}
+              isSelected={addons.includes(addon.title)}
+              billing={addon.billing}
+              desc={addon.desc}
+              onClick={(value) => toggleAddon(value)}
+              title={addon.title}
+            />
+          ))}
+        </div>
       </div>
     );
   }

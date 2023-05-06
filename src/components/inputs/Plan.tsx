@@ -14,7 +14,7 @@ function Plan({ billing, icon, title, isSelected, onClick }: PlanProps) {
   return (
     <div
       onClick={() => onClick(title)}
-      className={`flex gap-3 md:gap-10 p-3 border rounded-lg cursor-pointer md:flex-col md:w-full ${
+      className={`flex gap-3 md:gap-10 p-3 border rounded-lg cursor-pointer md:flex-col md:w-full hover:border-blue-900 transition ${
         isSelected
           ? "border-blue-900 bg-blue-50"
           : "bg-transparent border-neutral-200"
