@@ -2,18 +2,19 @@ import { useContext } from "react";
 import { BillingContext } from "../form/Form";
 
 interface PlanProps {
-  title: string;
-  billing: number;
-  icon: string;
+  plan: IPlan;
   isSelected: boolean;
-  onClick: (value: string) => void;
+  onClick: (value: IPlan) => void;
 }
 
-function Plan({ billing, icon, title, isSelected, onClick }: PlanProps) {
+function Plan({ plan, isSelected, onClick }: PlanProps) {
   const isMonthly = useContext(BillingContext);
+
+  const { billing, icon, title } = plan;
+
   return (
     <div
-      onClick={() => onClick(title)}
+      onClick={() => onClick(plan)}
       className={`flex gap-3 md:gap-10 p-3 border rounded-lg cursor-pointer md:flex-col md:w-full hover:border-blue-900 transition ${
         isSelected
           ? "border-blue-900 bg-blue-50"

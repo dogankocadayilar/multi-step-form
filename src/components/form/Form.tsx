@@ -1,13 +1,14 @@
 import { useState, useMemo, createContext, useCallback } from "react";
 import { useForm, FieldValues, SubmitHandler } from "react-hook-form";
+import { ADDONS, PLANS } from "../../data/Constants";
 import Heading from "../Heading";
 import FormView from "./FormView";
 import Sidebar from "./Sidebar";
 import Input from "../inputs/Input";
 import Toggle from "../Toggle";
-import { ADDONS, PLANS } from "../../data/Constants";
 import Plan from "../inputs/Plan";
 import Addon from "../inputs/Addon";
+import comfirmedIcon from "../../assets/images/icon-thank-you.svg";
 
 export const BillingContext = createContext(true);
 
@@ -16,6 +17,7 @@ enum STEPS {
   PLAN = 1,
   ADDONS = 2,
   SUMMARY = 3,
+  CONFIRMED = 4,
 }
 
 function Form() {
@@ -31,14 +33,14 @@ function Form() {
       name: "",
       email: "",
       phone: "",
-      planTitle: "arcade",
-      addons: ["online service"],
+      plan: {},
+      addons: [],
       isMonthly: true,
     },
   });
 
   const isMonthly = watch("isMonthly");
-  const planTitle = watch("planTitle");
+  const plan = watch("plan");
   const addons = watch("addons");
 
   const setCustomValue = (id: string, value: any) => {
@@ -63,7 +65,7 @@ function Form() {
     if (step !== STEPS.SUMMARY) return onNext();
 
     // Handle submit action
-    console.log(data);
+    setStep(STEPS.CONFIRMED);
   };
 
   const actionLabel = useMemo(() => {
@@ -123,14 +125,12 @@ function Form() {
           subTitle="You have the option monthly or yearly billing."
         />
         <div className="flex flex-col md:flex-row gap-3 md:gap-5 md:justify-between">
-          {PLANS.map((plan) => (
+          {PLANS.map((item) => (
             <Plan
-              key={plan.title}
-              billing={plan.billing}
-              icon={plan.icon}
-              title={plan.title}
-              isSelected={plan.title === planTitle}
-              onClick={(value) => setCustomValue("planTitle", value)}
+              key={item.title}
+              plan={item}
+              isSelected={item.title === plan.title}
+              onClick={(value) => setCustomValue("plan", value)}
             />
           ))}
         </div>
@@ -143,13 +143,16 @@ function Form() {
   }
 
   const toggleAddon = useCallback(
-    (title: string) => {
-      const isAddon = addons.includes(title);
+    (addon: IAddon) => {
+      const isAddon = addons.find((a: IAddon) => a.title === addon.title);
+
       if (isAddon) {
-        const newAddons = addons.filter((addon: string) => addon !== title);
+        const newAddons = addons.filter(
+          (a: IAddon) => a.title !== isAddon.title
+        );
         setCustomValue("addons", newAddons);
       } else {
-        setCustomValue("addons", [...addons, title]);
+        setCustomValue("addons", [...addons, addon]);
       }
     },
     [addons]
@@ -166,14 +169,88 @@ function Form() {
           {ADDONS.map((addon) => (
             <Addon
               key={addon.title}
-              isSelected={addons.includes(addon.title)}
-              billing={addon.billing}
-              desc={addon.desc}
+              addon={addon}
+              isSelected={
+                addons.find((a: IAddon) => a.title === addon.title) !==
+                undefined
+              }
               onClick={(value) => toggleAddon(value)}
-              title={addon.title}
             />
           ))}
         </div>
+      </div>
+    );
+  }
+
+  const addonsTotal = useMemo(() => {
+    // @ts-ignore
+    return addons.reduce((accumulator, addon) => {
+      return accumulator + addon.billing;
+    }, 0);
+  }, [addons]);
+
+  if (step === STEPS.SUMMARY) {
+    bodyContent = (
+      <div className="flex flex-col gap-4 md:gap-8">
+        <Heading
+          title="Finishing up"
+          subTitle="Double-check everything looks OK before confirming."
+        />
+        <div className="bg-slate-50 p-5 rounded-lg">
+          <div className=" text-blue-900 font-bold flex justify-between pb-3 items-center">
+            <div className="capitalize">
+              <div className="">
+                {plan.title} ({isMonthly ? "Monthly" : "Yearly"})
+              </div>
+              <div
+                onClick={() => setStep(STEPS.PLAN)}
+                className="underline text-neutral-400 hover:text-blue-900 font-medium cursor-pointer transition"
+              >
+                Change
+              </div>
+            </div>
+            <div>
+              ${isMonthly ? `${plan.billing}/mo` : `${plan.billing * 10}/yr`}
+            </div>
+          </div>
+          <hr />
+          {addons.map((addon: IAddon) => (
+            <div
+              key={addon.title}
+              className="flex justify-between pt-3 text-neutral-400"
+            >
+              <div className="capitalize">{addon.title}</div>
+              <div className="text-blue-900 font-semibold">
+                +$
+                {isMonthly ? `${addon.billing}/mo` : `${addon.billing * 10}/yr`}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-between">
+          <div className="text-neutral-400">
+            Total ({isMonthly ? "per month" : "per year"})
+          </div>
+          <div className="text-blue-900 font-bold">
+            +$
+            {isMonthly
+              ? `${addonsTotal + plan.billing}/mo`
+              : `${(addonsTotal + plan.billing) * 10}/yr`}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (step === STEPS.CONFIRMED) {
+    bodyContent = (
+      <div className="flex flex-col justify-center items-center h-full py-10 gap-5 md:py-0">
+        <img src={comfirmedIcon} alt="Thank You" className="w-14 md:w-16" />
+        <Heading
+          title="Thank you!"
+          subTitle="Thanks for confirming your subscription! We hope you have fun using our platform. If you ever need support, plase feel free to email us at support@loregaming.com."
+          center
+        />
       </div>
     );
   }
@@ -183,6 +260,7 @@ function Form() {
       <Sidebar currentStep={step} />
       <BillingContext.Provider value={isMonthly}>
         <FormView
+          step={step}
           actionLabel={actionLabel}
           body={bodyContent}
           onSubmit={handleSubmit(onSubmit)}

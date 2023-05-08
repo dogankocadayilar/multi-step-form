@@ -1,11 +1,12 @@
 interface HeadingProps {
   title: string;
   subTitle?: string;
+  center?: boolean;
 }
 
-function Heading({ title, subTitle }: HeadingProps) {
+function Heading({ title, subTitle, center }: HeadingProps) {
   return (
-    <div className="md:mt-5">
+    <div className={`md:mt-5 ${center ? "text-center" : "text-left"}`}>
       <div className="text-2xl md:text-4xl font-bold text-blue-900">
         {title}
       </div>

@@ -1,16 +1,16 @@
-import { useContext, useCallback } from "react";
+import { useContext } from "react";
 import { BillingContext } from "../form/Form";
 
 interface AddonProps {
-  title: string;
-  billing: number;
+  addon: IAddon;
   isSelected: boolean;
-  onClick: (value: string) => void;
-  desc: string;
+  onClick: (value: IAddon) => void;
 }
 
-function Addon({ billing, title, isSelected, onClick, desc }: AddonProps) {
+function Addon({ isSelected, onClick, addon }: AddonProps) {
   const isMonthly = useContext(BillingContext);
+
+  const { billing, title, desc } = addon;
 
   return (
     <label
@@ -24,8 +24,8 @@ function Addon({ billing, title, isSelected, onClick, desc }: AddonProps) {
       <input
         type="checkbox"
         id={title}
-        onChange={() => onClick(title)}
-        className="w-5 h-5 mx-2 mr-5"
+        onChange={() => onClick(addon)}
+        className="w-5 md:w-6 aspect-square mx-2 mr-5"
         checked={isSelected}
       />
       <div className="flex justify-between w-full items-center">
