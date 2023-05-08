@@ -14,7 +14,7 @@ function SidebarItem({ isCurrent, title, step }: SidebarItemProps) {
       >
         {step}
       </div>
-      <div className="hidden md:block">
+      <div className="hidden md:block -space-y-1">
         <div className="font-light text-neutral-300 text-sm">STEP {step}</div>
         <div className="font-semibold tracking-widest">{title}</div>
       </div>
