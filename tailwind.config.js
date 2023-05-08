@@ -5,8 +5,10 @@ export default {
   theme: {
     extend: {
       backgroundImage: {
-        "sidebar-mobile": "url('src/assets/images/bg-sidebar-mobile.svg')",
-        "sidebar-desktop": "url('src/assets/images/bg-sidebar-desktop.svg')",
+        "sidebar-mobile":
+          "url('https://raw.githubusercontent.com/dogankocadayilar/multi-step-form/main/src/assets/images/bg-sidebar-mobile.svg')",
+        "sidebar-desktop":
+          "url('https://raw.githubusercontent.com/dogankocadayilar/multi-step-form/main/src/assets/images/bg-sidebar-desktop.svg')",
       },
     },
   },

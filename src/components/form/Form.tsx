@@ -27,7 +27,6 @@ function Form() {
     setValue,
     watch,
     formState: { errors },
-    reset,
   } = useForm<FieldValues>({
     defaultValues: {
       name: "",
@@ -61,7 +60,7 @@ function Form() {
     setStep((prev) => prev - 1);
   };
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+  const onSubmit: SubmitHandler<FieldValues> = (_) => {
     if (step !== STEPS.SUMMARY) return onNext();
 
     // Handle submit action
